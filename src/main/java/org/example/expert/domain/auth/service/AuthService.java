@@ -26,13 +26,15 @@ public class AuthService {
     @Transactional
     public SignupResponse signup(SignupRequest signupRequest) {
 
+        // 조건문을 먼저 실행하믄 예외처리가 발생되니깐 아래는 실행안되는거 아닌가?
+        if (userRepository.existsByEmail(signupRequest.getEmail())) {
+            throw new InvalidRequestException("이미 존재하는 이메일입니다.");
+        }
+
         String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
 
         UserRole userRole = UserRole.of(signupRequest.getUserRole());
 
-        if (userRepository.existsByEmail(signupRequest.getEmail())) {
-            throw new InvalidRequestException("이미 존재하는 이메일입니다.");
-        }
 
         User newUser = new User(
                 signupRequest.getEmail(),
