@@ -27,12 +27,17 @@ public class WeatherClient {
                 restTemplate.getForEntity(buildWeatherApiUri(), WeatherDto[].class);
 
         WeatherDto[] weatherArray = responseEntity.getBody();
+
+        // 각각의 조건문으로 나누기
+        // 굳이 필요없는 else 사용으로 보임
+        // API 호출 문제가 더 선행으로 발생하니 앞에 두고
         if (!HttpStatus.OK.equals(responseEntity.getStatusCode())) {
-            throw new ServerException("날씨 데이터를 가져오는데 실패했습니다. 상태 코드: " + responseEntity.getStatusCode());
-        } else {
-            if (weatherArray == null || weatherArray.length == 0) {
-                throw new ServerException("날씨 데이터가 없습니다.");
-            }
+            throw new ServerException("날씨 데이터를 가져오는데 실패했습니다. 상태 코드: "
+                    + responseEntity.getStatusCode());
+        }
+        // 없는 내용 조회를 후행으로 예외처리를 각각 분리한다.
+        if (weatherArray == null || weatherArray.length == 0) {
+            throw new ServerException("날씨 데이터가 없습니다.");
         }
 
         String today = getCurrentDate();
